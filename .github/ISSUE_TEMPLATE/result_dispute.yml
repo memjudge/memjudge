@@ -1,0 +1,22 @@
+name: Result dispute or takedown
+description: A vendor or author disputes a published result.
+labels: [dispute]
+body:
+  - type: input
+    id: run
+    attributes:
+      label: Run ID or result link
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: What is wrong, and what evidence supports it?
+    validations:
+      required: true
+  - type: input
+    id: affiliation
+    attributes:
+      label: Your affiliation
+    validations:
+      required: true

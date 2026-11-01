@@ -1,0 +1,14 @@
+id: zep/graphiti
+target: Zep Graphiti open source (in-process, local FalkorDB)
+author: MemJudge maintainers
+label: maintainer-written
+sdk: graphiti-core[falkordb]==0.31.1
+required_keys: [GRAPHITI_OPENAI_API_KEY]
+allowed_domains: [api.openai.com]
+models: [llm_model, small_model, embedder_model]
+settings:
+  llm_model: gpt-6-luna # the same LLM for every system that lets you choose (ADR 0014)
+  small_model: gpt-6-luna
+  embedder_model: text-embedding-3-small # Graphiti's and Mem0's default
+  falkordb_host: localhost
+  falkordb_port: 6379

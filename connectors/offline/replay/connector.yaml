@@ -1,0 +1,10 @@
+id: offline/replay
+target: Replay of search results recorded from a memory system (offline, no API calls)
+author: MemJudge maintainers
+label: maintainer-written
+sdk: null
+required_keys: []
+allowed_domains: []
+settings:
+  path: null # output.json of a recorded run: {conversations: [{sample_id, searches: [...]}]}
+  tool: null # which system recorded it; picks the parser for search_response (mem0)

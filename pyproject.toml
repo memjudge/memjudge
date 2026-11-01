@@ -1,0 +1,100 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "memjudge"
+dynamic = ["version"]
+description = "Open, vendor-neutral benchmark for AI memory systems."
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+authors = [{ name = "MemJudge contributors", email = "admin@memjudge.org" }]
+keywords = ["benchmark", "llm", "memory", "evaluation", "rag"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Typing :: Typed",
+]
+dependencies = [
+  "pydantic>=2.7",
+  "httpx>=0.27",
+  "pyyaml>=6.0",
+  "tiktoken>=0.7",
+  "cryptography>=42",
+  "rfc8785>=0.1.4",
+  "jinja2>=3.1",
+  "typer>=0.12",
+  "rich>=13.8",
+]
+
+[project.optional-dependencies]
+# Exact pins, matching each connector.yaml. mem0-oss also needs the spaCy model:
+#   python -m spacy download en_core_web_sm
+mem0 = ["mem0ai==2.2.1"]
+mem0-oss = ["mem0ai[nlp]==2.2.1", "fastembed==0.9.0"]
+zep = ["zep-cloud==3.30.0"]
+graphiti = ["graphiti-core[falkordb]==0.31.1"]
+supermemory = ["supermemory==5.0.0"]
+letta = ["letta-client==1.12.1"]
+all = ["memjudge[mem0,mem0-oss,zep,graphiti,supermemory,letta]"]
+dev = [
+  "pytest>=8",
+  "respx>=0.21",
+  "ruff>=0.6",
+  "mypy>=1.11",
+  "types-PyYAML",
+]
+
+[project.scripts]
+memjudge = "memjudge.cli:main"
+
+[project.urls]
+Homepage = "https://memjudge.org"
+Repository = "https://github.com/memjudge/memjudge"
+Issues = "https://github.com/memjudge/memjudge/issues"
+
+[tool.hatch.version]
+path = "src/memjudge/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+exclude = ["/.github", "/.env.example"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/memjudge"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"connectors" = "memjudge/_connectors"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "N", "PTH"]
+# En dashes in user-facing text are intentional; literal word lists read better split.
+ignore = ["RUF001", "RUF002", "RUF003", "SIM905"]
+
+[tool.mypy]
+strict = true
+python_version = "3.11"
+mypy_path = "src"
+packages = ["memjudge"]
+
+[[tool.mypy.overrides]]
+module = [
+  "tiktoken.*", "rfc8785.*", "mem0.*", "zep_cloud.*", "supermemory.*", "letta_client.*",
+  "spacy.*", "fastembed.*", "graphiti_core.*", "falkordb.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

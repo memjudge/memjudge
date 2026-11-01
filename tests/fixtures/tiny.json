@@ -1,0 +1,50 @@
+{
+  "schema_version": "1",
+  "name": "tiny",
+  "version": "v1",
+  "source": "https://github.com/memjudge/memjudge/tree/main/tests/fixtures",
+  "license": "Apache-2.0",
+  "conversations": [
+    {
+      "id": "c1",
+      "sessions": [
+        {
+          "id": "s1",
+          "started_at": "2024-03-01T10:00:00",
+          "turns": [
+            {"id": "c1:1", "speaker": "Ana", "text": "I just adopted a beagle called Biscuit!", "timestamp": "2024-03-01T10:00:00"},
+            {"id": "c1:2", "speaker": "Ben", "text": "Congrats! I'm training for the Lisbon marathon in May.", "timestamp": "2024-03-01T10:01:00"}
+          ]
+        },
+        {
+          "id": "s2",
+          "started_at": "2024-04-02T18:30:00",
+          "turns": [
+            {"id": "c1:3", "speaker": "Ana", "text": "I moved from Leeds to Bristol last week.", "timestamp": "2024-04-02T18:30:00"},
+            {"id": "c1:4", "speaker": "Ben", "text": "Nice. My marathon got moved to October because of the heat.", "timestamp": "2024-04-02T18:31:00"}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "c2",
+      "sessions": [
+        {
+          "id": "s1",
+          "started_at": "2024-05-10T09:00:00",
+          "turns": [
+            {"id": "c2:1", "speaker": "user", "text": "My favourite tea is genmaicha.", "timestamp": "2024-05-10T09:00:00"},
+            {"id": "c2:2", "speaker": "assistant", "text": "Genmaicha is green tea with roasted brown rice.", "timestamp": "2024-05-10T09:00:30"}
+          ]
+        }
+      ]
+    }
+  ],
+  "questions": [
+    {"id": "q1", "conversation_id": "c1", "question": "What is the name of Ana's dog?", "gold_answer": "Biscuit", "category": "single-hop", "evidence_turn_ids": ["c1:1"], "asked_at": "2024-06-01T00:00:00"},
+    {"id": "q2", "conversation_id": "c1", "question": "Where does Ana live now?", "gold_answer": "Bristol", "category": "knowledge-update", "kind": "knowledge_update", "evidence_turn_ids": ["c1:3"], "asked_at": "2024-06-01T00:00:00"},
+    {"id": "q3", "conversation_id": "c1", "question": "When is Ben's marathon?", "gold_answer": "October", "category": "knowledge-update", "kind": "knowledge_update", "evidence_turn_ids": ["c1:4"], "asked_at": "2024-06-01T00:00:00"},
+    {"id": "q4", "conversation_id": "c1", "question": "What is the name of Ben's cat?", "gold_answer": "Not answerable: the conversation does not contain this information.", "category": "abstention", "kind": "abstention", "distractor_answer": "Biscuit", "asked_at": "2024-06-01T00:00:00"},
+    {"id": "q5", "conversation_id": "c2", "question": "What is my favourite tea?", "gold_answer": "genmaicha", "category": "single-hop", "evidence_turn_ids": ["c2:1"], "asked_at": "2024-06-01T00:00:00"}
+  ]
+}

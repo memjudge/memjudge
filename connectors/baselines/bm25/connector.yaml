@@ -1,0 +1,10 @@
+id: baselines/bm25
+target: BM25 keyword retrieval over raw turns (baseline)
+author: MemJudge maintainers
+label: maintainer-written
+sdk: null
+required_keys: []
+allowed_domains: []
+settings:
+  k1: 1.5
+  b: 0.75

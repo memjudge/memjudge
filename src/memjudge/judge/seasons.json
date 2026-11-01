@@ -1,0 +1,22 @@
+[
+  {
+    "id": "1",
+    "name": "Season 1",
+    "started": "2026-10-28",
+    "provisional": true,
+    "summary": "First season: Claude Sonnet 5.5 with judge prompt v3.",
+    "details": "https://github.com/memjudge/memjudge/pull/9",
+    "upgrade": "re-judge",
+    "judge": {
+      "routes": {
+        "anthropic": "anthropic:claude-sonnet-5-5",
+        "openrouter": "openrouter:anthropic/claude-sonnet-5.5@anthropic"
+      },
+      "default_route": "anthropic",
+      "effort": "medium",
+      "max_output_tokens": 4000,
+      "prompt_version": "v3",
+      "prompt_hash": "sha256:ce6d9750331c79d1bb3a0737109c458fef4ba9fd8cf929c75c1c1cf9407a4b78"
+    }
+  }
+]

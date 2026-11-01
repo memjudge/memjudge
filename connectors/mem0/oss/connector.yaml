@@ -1,0 +1,13 @@
+id: mem0/oss
+target: Mem0 open source (in-process, full multi-signal setup)
+author: MemJudge maintainers
+label: maintainer-written
+sdk: mem0ai[nlp]==2.2.1
+required_keys: [MEM0_OSS_OPENAI_API_KEY]
+allowed_domains: [api.openai.com]
+models: [llm_model, embedder_model]
+settings:
+  llm_model: gpt-6-luna # the same LLM for every system that lets you choose (ADR 0014)
+  llm_is_reasoning_model: true # Mem0's own flag; its name check misses gpt-6-luna
+  embedder_model: text-embedding-3-small # Mem0 2.2.1's default, named explicitly (ADR 0014)
+  embedding_dims: 1536 # set only together with embedder_model

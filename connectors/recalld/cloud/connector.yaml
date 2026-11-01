@@ -1,0 +1,24 @@
+id: recalld/cloud
+target: Recalld (hosted API, v1)
+# Recalld is built by the maintainer of MemJudge, so this connector is vendor-maintained.
+author: MemJudge maintainers (Recalld founder)
+label: vendor-maintained
+sdk: null
+required_keys: [RECALLD_API_KEY]
+allowed_domains: [eu.recalld.ai, us.recalld.ai]
+models: [decompose_model, evaluate_model, select_model, embedding_model]
+settings:
+  retrieval: recall # recall = full pipeline; search = vector similarity only
+  decompose_model: openai-gpt-6-luna # every model is sent explicitly; the account default never applies (ADR 0014)
+  evaluate_model: openai-gpt-6-luna
+  select_model: openai-gpt-6-luna
+  embedding_model: gemini-embedding-002-vertex
+  base_url: null # null = derived from the key's region prefix; set for local/staging
+  max_retries: 4
+  timeout_s: 300
+  batch: false # true = upload the whole run in one Recalld batch and wait for it (ADR 0010); local runs only
+  allow_non_eu: false # batch only: accept batch processing outside the EU on the EU host
+  batch_poll_s: 60
+presets: # what a hosted run can pick on the /run form
+  recall: { retrieval: recall }
+  search: { retrieval: search }

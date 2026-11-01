@@ -1,0 +1,14 @@
+# What runner/Dockerfile installs in /opt/core, the environment the API and the finish job
+# run from, for core.lock: MemJudge and the runner only, no connector SDK (ADR 0009).
+# Constrained to requirements.lock, so every package has the same version in both
+# environments. Paths are relative to the repository root. Regenerate it after
+# requirements.lock, from the repository root:
+#
+#   uv pip compile runner/core.in -c runner/requirements.lock --generate-hashes \
+#     --python-version 3.11 --python-platform x86_64-manylinux_2_28 \
+#     --no-emit-package memjudge --no-emit-package memjudge-runner \
+#     --custom-compile-command "see runner/core.in" -o runner/core.lock
+.
+./runner
+# Builds the two local packages without fetching a build backend.
+hatchling

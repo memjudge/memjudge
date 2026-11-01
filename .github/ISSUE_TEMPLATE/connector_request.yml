@@ -1,0 +1,23 @@
+name: Connector or dataset request
+description: Ask for a memory system or dataset to be added.
+labels: [request]
+body:
+  - type: input
+    id: target
+    attributes:
+      label: System or dataset
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Link to SDK/API docs or dataset source and licence
+    validations:
+      required: true
+  - type: dropdown
+    id: affiliation
+    attributes:
+      label: Are you affiliated with this system or dataset?
+      options: ["No", "Yes"]
+    validations:
+      required: true

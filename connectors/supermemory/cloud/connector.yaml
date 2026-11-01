@@ -1,0 +1,13 @@
+id: supermemory/cloud
+target: Supermemory (hosted API, v5)
+author: MemJudge maintainers
+label: maintainer-written
+sdk: supermemory==5.0.0
+required_keys: [SUPERMEMORY_API_KEY]
+allowed_domains: [api.supermemory.ai]
+models: vendor # Supermemory picks the models and does not say which (ADR 0014)
+settings:
+  dreaming: instant # build memories per document now; dynamic (the default) waits minutes
+  poll_interval_s: 1.0
+  ingest_timeout_s: 3600
+  base_url: null # null = https://api.supermemory.ai; set for local/self-hosted

@@ -1,0 +1,13 @@
+id: letta/cloud
+target: Letta (hosted API, v1; agent-managed memory)
+author: MemJudge maintainers
+label: maintainer-written
+sdk: letta-client==1.12.1
+required_keys: [LETTA_API_KEY]
+allowed_domains: [api.letta.com]
+models: [model, embedding]
+max_concurrency: 3 # Letta's free plan allows 3 agents; one agent per conversation (ADR 0013)
+settings:
+  model: openai/gpt-6-luna # the same LLM for every system that lets you choose (ADR 0014)
+  embedding: openai/text-embedding-3-small # explicit, never Letta's default (ADR 0014); same embedder as zep/graphiti
+  base_url: null # null = https://api.letta.com; set for a self-hosted Letta server

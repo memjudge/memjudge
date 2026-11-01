@@ -1,0 +1,16 @@
+# Only what runner/Dockerfile copies: pyproject.toml, README.md, LICENSE, src, connectors, runner.
+**/.venv
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+.git
+runs
+selections
+tests
+runner/tests
+docs
+*.log
+*.key
+.env*

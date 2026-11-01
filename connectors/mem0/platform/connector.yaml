@@ -1,0 +1,13 @@
+id: mem0/platform
+target: Mem0 Platform (hosted API, v3)
+author: MemJudge maintainers
+label: maintainer-written
+sdk: mem0ai==2.2.1
+required_keys: [MEM0_API_KEY]
+allowed_domains: [api.mem0.ai]
+models: vendor # Mem0 picks the models and does not say which (ADR 0014)
+settings:
+  rerank: false
+  poll_interval_s: 1.0
+  ingest_timeout_s: 900
+  base_url: null # null = https://api.mem0.ai; set for local/self-hosted

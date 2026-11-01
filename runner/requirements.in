@@ -1,0 +1,17 @@
+# What runner/Dockerfile installs in /opt/retrieve, the retrieve jobs' environment, for
+# requirements.lock (every package pinned, with hashes). Paths are relative to the repository root. After changing a dependency in
+# pyproject.toml or runner/pyproject.toml, regenerate the lock from the repository root:
+#
+#   uv pip compile runner/requirements.in --generate-hashes --python-version 3.11 \
+#     --python-platform x86_64-manylinux_2_28 --no-emit-package memjudge \
+#     --no-emit-package memjudge-runner -o runner/requirements.lock
+#
+# Then regenerate runner/core.lock (the command is in runner/core.in).
+.[all]
+./runner
+# Builds the two local packages without fetching a build backend.
+hatchling
+# The spaCy model mem0-oss needs (en_core_web_sm 3.8 matches spaCy 3.8).
+en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+# preshed 3.0.14 breaks loading that model (OverflowError in spaCy's tokenizer).
+preshed<3.0.14

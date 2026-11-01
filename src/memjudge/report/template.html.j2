@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MemJudge report · Top {{ top_k }}</title>
+<style>
+:root {
+  --mj-bg: #f7f8fa; --mj-surface: #ffffff; --mj-text: #1b1f24; --mj-muted: #5b6470;
+  --mj-border: #e3e6ea; --mj-grid: #e3e6ea; --mj-accent: #3b6fd8;
+  --mj-s1: #3b6fd8; --mj-s2: #d9822b; --mj-s3: #2f9e72; --mj-s4: #a24fc2;
+  --mj-good: #1f7a55; --mj-bad: #b23b3b; --mj-warn: #9a6400;
+  --mj-good-bg: #e6f4ee; --mj-bad-bg: #fbeaea; --mj-warn-bg: #fdf3e1;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --mj-bg: #0f1216; --mj-surface: #171b21; --mj-text: #e6e9ed; --mj-muted: #9aa3ae;
+    --mj-border: #2a3039; --mj-grid: #2a3039; --mj-accent: #7aa2f0;
+    --mj-s1: #7aa2f0; --mj-s2: #f0a85a; --mj-s3: #5cc79c; --mj-s4: #c58be0;
+    --mj-good: #5cc79c; --mj-bad: #f08a8a; --mj-warn: #f0c060;
+    --mj-good-bg: #15302a; --mj-bad-bg: #3a1c1c; --mj-warn-bg: #3a2e14;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --mj-bg: #0f1216; --mj-surface: #171b21; --mj-text: #e6e9ed; --mj-muted: #9aa3ae;
+  --mj-border: #2a3039; --mj-grid: #2a3039; --mj-accent: #7aa2f0;
+  --mj-s1: #7aa2f0; --mj-s2: #f0a85a; --mj-s3: #5cc79c; --mj-s4: #c58be0;
+  --mj-good: #5cc79c; --mj-bad: #f08a8a; --mj-warn: #f0c060;
+  --mj-good-bg: #15302a; --mj-bad-bg: #3a1c1c; --mj-warn-bg: #3a2e14;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--mj-bg); color: var(--mj-text);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 1180px; margin: 0 auto; padding: 24px 16px 64px; }
+header { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+h1 { font-size: 1.5rem; margin: 0; letter-spacing: -0.01em; }
+h2 { font-size: 1.1rem; margin: 32px 0 12px; }
+.sub { color: var(--mj-muted); margin: 4px 0 0; font-size: 0.9rem; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; }
+.badge.warn { background: var(--mj-warn-bg); color: var(--mj-warn); }
+.badge.good { background: var(--mj-good-bg); color: var(--mj-good); }
+.badge.bad { background: var(--mj-bad-bg); color: var(--mj-bad); }
+button { font: inherit; color: var(--mj-text); background: var(--mj-surface); border: 1px solid var(--mj-border);
+  border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 2px solid var(--mj-accent); outline-offset: 2px; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); gap: 12px; }
+.tile { background: var(--mj-surface); border: 1px solid var(--mj-border); border-radius: 12px; padding: 14px 16px; }
+.tile .k { color: var(--mj-muted); font-size: 0.8rem; }
+.tile .v { font-size: 1.45rem; font-weight: 650; font-variant-numeric: tabular-nums; margin-top: 2px; }
+.tile .d { color: var(--mj-muted); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); gap: 12px; }
+.card { background: var(--mj-surface); border: 1px solid var(--mj-border); border-radius: 12px; padding: 12px 16px; min-width: 0; }
+.card h3 { font-size: 0.95rem; margin: 4px 0 4px; }
+.chart { width: 100%; height: 320px; }
+.empty { color: var(--mj-muted); font-size: 0.9rem; padding: 24px 0; }
+.table-wrap { overflow-x: auto; background: var(--mj-surface); border: 1px solid var(--mj-border); border-radius: 12px; }
+table { border-collapse: collapse; width: 100%; font-size: 0.88rem; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--mj-border); vertical-align: top; }
+th { color: var(--mj-muted); font-weight: 600; white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.filters input, .filters select { font: inherit; color: var(--mj-text); background: var(--mj-surface);
+  border: 1px solid var(--mj-border); border-radius: 8px; padding: 6px 10px; min-width: 0; }
+.filters input { flex: 1 1 220px; }
+details summary { cursor: pointer; color: var(--mj-accent); }
+pre { white-space: pre-wrap; word-break: break-word; font-size: 0.82rem; background: var(--mj-bg);
+  border-radius: 8px; padding: 10px; margin: 8px 0 0; max-height: 320px; overflow: auto; }
+dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 0; font-size: 0.88rem; }
+dt { color: var(--mj-muted); }
+dd { margin: 0; word-break: break-all; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.82rem; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+footer { margin-top: 40px; color: var(--mj-muted); font-size: 0.82rem; }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div>
+    <h1>MemJudge report · Top {{ top_k }}</h1>
+    <p class="sub">
+      {% for r in runs %}<strong>{{ r.label }}</strong>{% if not loop.last %} · {% endif %}{% endfor %}
+      — {{ primary.dataset.name }} {{ primary.dataset.version }} ({{ primary.dataset.hash[7:19] }})
+      {% if primary.dataset.selection %}· partial run: {{ primary.dataset.selection.describe() }} ({{ primary.dataset.conversation_ids|length }} conversations, {{ primary.dataset.questions }} questions){% endif %}
+    </p>
+  </div>
+  <div>
+    {% if signature_status == "valid" %}<span class="badge good">Signature valid</span>
+    {% elif signature_status == "invalid" %}<span class="badge bad">Signature invalid</span>
+    {% else %}<span class="badge warn">Local run · unsigned · not published</span>{% endif %}
+    {% if not primary.judge.official %}<span class="badge warn">Unofficial judge</span>{% endif %}
+    {% if primary.reused_ingestion %}<span class="badge warn" title="Only retrieval and judging were re-run; ingestion metrics come from the earlier run">Ingestion reused from {{ primary.reused_ingestion.run_id }}</span>{% endif %}
+    {% if primary.connector.custom_endpoint %}<span class="badge warn" title="Not the vendor's hosted service; not comparable to it">Custom endpoint: {{ primary.connector.endpoint }}</span>{% endif %}
+    <button type="button" id="theme" aria-label="Toggle colour theme">Theme</button>
+  </div>
+</header>
+
+<section aria-labelledby="h-summary">
+  <h2 id="h-summary">Summary — {{ primary_label }}</h2>
+  {% set o = primary_metrics.overall %}{% set m = primary_metrics %}
+  <div class="tiles">
+    <div class="tile"><div class="k">Accuracy</div><div class="v">{{ pct(o.accuracy) }}</div>
+      <div class="d">95% CI {{ pct(o.accuracy_ci95[0]) }}–{{ pct(o.accuracy_ci95[1]) }} · n={{ o.questions }}</div></div>
+    <div class="tile"><div class="k">Context tokens / query</div><div class="v">{{ num(o.context_tokens_mean) }}</div>
+      <div class="d">p95 {{ num(o.context_tokens_p95) }} · budget {{ num(primary.config.budget_tokens) }}</div></div>
+    <div class="tile"><div class="k">Efficiency</div><div class="v">{{ fixed(o.efficiency, 2) }}</div>
+      <div class="d">accuracy % per 1k tokens</div></div>
+    <div class="tile"><div class="k">Retrieval latency</div><div class="v">{{ secs(o.retrieval_latency_p50_s) }}</div>
+      <div class="d">p50 · p95 {{ secs(o.retrieval_latency_p95_s) }}</div></div>
+    <div class="tile"><div class="k">Ingestion time</div><div class="v">{{ secs(m.ingestion.total_s) }}</div>
+      <div class="d">{% if m.ingestion.mode == "batch" %}batch, wall-clock{% else %}all conversations added up{% endif %} · {{ secs(m.ingestion.per_turn_s, 3) }} per turn · {{ num(m.ingestion.turns) }} turns</div></div>
+    <div class="tile"><div class="k">Abstention accuracy</div><div class="v">{{ rate(o.abstention_accuracy) }}</div>
+      <div class="d">n={{ o.abstention_accuracy.n }}</div></div>
+    <div class="tile"><div class="k">Stale-fact rate</div><div class="v">{{ rate(o.stale_fact_rate) }}</div>
+      <div class="d">knowledge-update questions · n={{ o.stale_fact_rate.n }}</div></div>
+    <div class="tile"><div class="k">Evidence recall</div><div class="v">{{ rate(o.evidence_recall) }}</div>
+      <div class="d">{% if o.evidence_recall.n %}n={{ o.evidence_recall.n }}{% else %}system does not report sources{% endif %}</div></div>
+    <div class="tile"><div class="k">Error rate</div><div class="v">{{ rate(m.error_rate) }}</div>
+      <div class="d">{{ m.error_rate.n }} calls</div></div>
+    <div class="tile"><div class="k">Truncated contexts</div><div class="v">{{ pct(o.truncation_rate) }}</div>
+      <div class="d">over the token budget</div></div>
+    <div class="tile"><div class="k">Flagged questions</div><div class="v">{{ o.flagged }}</div>
+      <div class="d">gold answer possibly wrong</div></div>
+  </div>
+</section>
+
+<section aria-labelledby="h-charts">
+  <h2 id="h-charts">Charts</h2>
+  <div class="charts">
+    <div class="card"><h3>Accuracy vs context tokens</h3><div class="chart" id="c-tokens" role="img" aria-label="Scatter of accuracy against mean context tokens per run"></div></div>
+    <div class="card"><h3>Accuracy by category</h3><div class="chart" id="c-cats" role="img" aria-label="Bar chart of accuracy per question category"></div></div>
+    <div class="card"><h3>Accuracy vs retrieval latency</h3><div class="chart" id="c-latency" role="img" aria-label="Scatter of accuracy against median retrieval latency per run"></div></div>
+    <div class="card"><h3>Retrieval latency distribution</h3><div class="chart" id="c-hist" role="img" aria-label="Histogram of retrieval latencies"></div></div>
+  </div>
+</section>
+
+{% if runs|length > 1 %}
+<section aria-labelledby="h-compare">
+  <h2 id="h-compare">Compare runs</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th scope="col">Metric</th>{% for r in runs %}<th scope="col" class="num">{{ r.label }}</th>{% endfor %}</tr></thead>
+    <tbody>
+      <tr><th scope="row">Accuracy</th>{% for r in runs %}<td class="num">{{ pct(r.metrics.overall.accuracy) }}</td>{% endfor %}</tr>
+      <tr><th scope="row">95% CI</th>{% for r in runs %}<td class="num">{{ pct(r.metrics.overall.accuracy_ci95[0]) }}–{{ pct(r.metrics.overall.accuracy_ci95[1]) }}</td>{% endfor %}</tr>
+      <tr><th scope="row">Context tokens (mean)</th>{% for r in runs %}<td class="num">{{ num(r.metrics.overall.context_tokens_mean) }}</td>{% endfor %}</tr>
+      <tr><th scope="row">Efficiency</th>{% for r in runs %}<td class="num">{{ fixed(r.metrics.overall.efficiency, 2) }}</td>{% endfor %}</tr>
+      <tr><th scope="row">Latency p50 / p95</th>{% for r in runs %}<td class="num">{{ secs(r.metrics.overall.retrieval_latency_p50_s) }} / {{ secs(r.metrics.overall.retrieval_latency_p95_s) }}</td>{% endfor %}</tr>
+      <tr><th scope="row">Ingestion per turn</th>{% for r in runs %}<td class="num">{{ secs(r.metrics.ingestion.per_turn_s, 3) }}{% if r.metrics.ingestion.mode == "batch" %} (batch, wall-clock){% endif %}</td>{% endfor %}</tr>
+      <tr><th scope="row">Abstention accuracy</th>{% for r in runs %}<td class="num">{{ rate(r.metrics.overall.abstention_accuracy) }}</td>{% endfor %}</tr>
+      <tr><th scope="row">Stale-fact rate</th>{% for r in runs %}<td class="num">{{ rate(r.metrics.overall.stale_fact_rate) }}</td>{% endfor %}</tr>
+      <tr><th scope="row">Error rate</th>{% for r in runs %}<td class="num">{{ rate(r.metrics.error_rate) }}</td>{% endfor %}</tr>
+    </tbody>
+  </table></div>
+</section>
+{% endif %}
+
+<section aria-labelledby="h-cats">
+  <h2 id="h-cats">By category — {{ primary_label }}</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th scope="col">Category</th><th scope="col" class="num">n</th><th scope="col" class="num">Accuracy</th><th scope="col" class="num">95% CI</th>
+      <th scope="col" class="num">Tokens (mean)</th><th scope="col" class="num">Latency p50</th><th scope="col" class="num">Evidence recall</th><th scope="col" class="num">Errors</th></tr></thead>
+    <tbody>
+    {% for name, c in primary_metrics.by_category.items() %}
+      <tr><th scope="row">{{ name }}</th><td class="num">{{ c.questions }}</td><td class="num">{{ pct(c.accuracy) }}</td>
+        <td class="num">{{ pct(c.accuracy_ci95[0]) }}–{{ pct(c.accuracy_ci95[1]) }}</td><td class="num">{{ num(c.context_tokens_mean) }}</td>
+        <td class="num">{{ secs(c.retrieval_latency_p50_s) }}</td><td class="num">{{ rate(c.evidence_recall) }}</td><td class="num">{{ c.errors }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="h-questions">
+  <h2 id="h-questions">Per-question verdicts — {{ primary_label }}</h2>
+  <div class="filters">
+    <label class="sr-only" for="q-search">Search questions</label>
+    <input id="q-search" type="search" placeholder="Search question or reason">
+    <label class="sr-only" for="q-verdict">Verdict</label>
+    <select id="q-verdict"><option value="">All verdicts</option><option value="correct">Correct</option>
+      <option value="incorrect">Incorrect</option><option value="error">Error</option><option value="flagged">Flagged</option></select>
+    <label class="sr-only" for="q-cat">Category</label>
+    <select id="q-cat"><option value="">All categories</option>
+      {% for name in primary_metrics.by_category %}<option>{{ name }}</option>{% endfor %}</select>
+  </div>
+  <p class="sub" id="q-count" aria-live="polite"></p>
+  <div class="table-wrap"><table>
+    <thead><tr><th scope="col">Question</th><th scope="col">Category</th><th scope="col">Verdict</th><th scope="col" class="num">Tokens</th><th scope="col">Judge reason</th></tr></thead>
+    <tbody id="q-body"></tbody>
+  </table></div>
+  <p class="sub">Showing at most 500 rows; contexts are cut to {{ context_chars }} characters. Full data is in <code>questions-top{{ top_k }}.jsonl</code>.</p>
+</section>
+
+<section aria-labelledby="h-prov">
+  <h2 id="h-prov">Provenance — {{ primary_label }}</h2>
+  <div class="card"><dl>
+    <dt>Run ID</dt><dd>{{ primary.run_id }}</dd>
+    <dt>Started / finished</dt><dd>{{ primary.started_at }} / {{ primary.finished_at }}</dd>
+    <dt>Tool</dt><dd>memjudge {{ primary.tool.version }} {{ primary.tool.commit or "" }}</dd>
+    <dt>Dataset hash</dt><dd>{{ primary.dataset.hash }}</dd>
+    <dt>Dataset licence</dt><dd>{{ primary.dataset.license }}</dd>
+    <dt>Connector</dt><dd>{{ primary.connector.id }} ({{ primary.connector.label }}) {{ primary.connector.code_hash }}</dd>
+    {% if primary.reused_ingestion %}<dt>Ingestion</dt><dd>reused from run {{ primary.reused_ingestion.run_id }} (connector {{ primary.reused_ingestion.connector_code_hash }}); ingestion metrics are that run's</dd>{% endif %}
+    <dt>Endpoint</dt><dd>{{ primary.connector.endpoint or "in-process" }}{% if primary.connector.custom_endpoint %} (custom: not the vendor's hosted service){% endif %}</dd>
+    <dt>Connector settings</dt><dd>{{ primary.connector.settings | tojson }}</dd>
+    <dt>Judge</dt><dd>{{ primary.judge.route }}:{{ primary.judge.model }}{% if primary.judge.upstream_provider %}@{{ primary.judge.upstream_provider }}{% endif %} · effort {{ primary.judge.effort }} · served by {{ primary.judge.served_by | join(", ") }}</dd>
+    <dt>Judge prompt</dt><dd>{{ primary.judge.prompt_version }} {{ primary.judge.prompt_hash }}</dd>
+    <dt>Tokenizer / budget</dt><dd>{{ primary.config.tokenizer }} / {{ primary.config.budget_tokens }}</dd>
+    <dt>Price table</dt><dd>{{ primary.price_table_version }}</dd>
+    <dt>Affiliated with the tested system</dt><dd>{{ "yes" if primary.affiliation.affiliated else ("no" if primary.affiliation.affiliated == false else "not stated") }}{% if primary.affiliation.system %} ({{ primary.affiliation.system }}){% endif %}</dd>
+    {% for a in primary.artifacts %}<dt>{{ a.name }}</dt><dd>{{ a.sha256 }}</dd>{% endfor %}
+  </dl></div>
+</section>
+
+<footer>Generated by MemJudge {{ version }}. Local results are for private testing and are never published to the leaderboard.</footer>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js" integrity="{{ echarts_sri }}" crossorigin="anonymous"></script>
+<script>{{ charts_js | safe }}</script>
+<script id="mj-data" type="application/json">{{ data_json | safe }}</script>
+<script>
+(function () {
+  "use strict";
+  var data = JSON.parse(document.getElementById("mj-data").textContent);
+  var root = document.documentElement;
+  try { var saved = localStorage.getItem("mj-theme"); if (saved) root.dataset.theme = saved; } catch (e) {}
+  document.getElementById("theme").addEventListener("click", function () {
+    var dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    root.dataset.theme = dark ? "light" : "dark";
+    try { localStorage.setItem("mj-theme", root.dataset.theme); } catch (e) {}
+    draw();
+  });
+
+  var instances = [];
+  function chart(id, option) {
+    var el = document.getElementById(id);
+    if (!option) { el.innerHTML = '<p class="empty">Not reported.</p>'; el.style.height = "auto"; return; }
+    var c = echarts.init(el, null, { renderer: "svg" });
+    c.setOption(option);
+    instances.push(c);
+  }
+  function draw() {
+    if (typeof echarts === "undefined") {
+      document.querySelectorAll(".chart").forEach(function (el) { el.innerHTML = '<p class="empty">Charts need an internet connection (ECharts CDN).</p>'; el.style.height = "auto"; });
+      return;
+    }
+    instances.forEach(function (c) { c.dispose(); }); instances = [];
+    var C = window.MemJudgeCharts;
+    chart("c-tokens", C.accuracyVsTokens(data.runs));
+    chart("c-cats", C.accuracyByCategory(data.runs));
+    chart("c-latency", C.accuracyVsLatency(data.runs));
+    chart("c-hist", C.latencyHistogram(data.latencies));
+  }
+  draw();
+  addEventListener("resize", function () { instances.forEach(function (c) { c.resize(); }); });
+
+  var body = document.getElementById("q-body");
+  var search = document.getElementById("q-search"), verdict = document.getElementById("q-verdict"), cat = document.getElementById("q-cat");
+  function esc(s) { var d = document.createElement("div"); d.textContent = s == null ? "" : String(s); return d.innerHTML; }
+  function status(q) { return q.error ? "error" : (q.correct ? "correct" : "incorrect"); }
+  function render() {
+    var term = search.value.toLowerCase(), v = verdict.value, c = cat.value;
+    var rows = data.questions.filter(function (q) {
+      if (c && q.category !== c) return false;
+      if (v === "flagged" ? !q.gold_suspect : (v && status(q) !== v)) return false;
+      return !term || (q.question + " " + q.reason + " " + q.id).toLowerCase().indexOf(term) >= 0;
+    });
+    document.getElementById("q-count").textContent = rows.length + " of " + data.questions.length + " questions";
+    body.innerHTML = rows.slice(0, 500).map(function (q) {
+      var s = status(q), cls = s === "correct" ? "good" : (s === "error" ? "warn" : "bad");
+      return "<tr><td><div>" + esc(q.question) + "</div><details><summary>Gold answer and context</summary><p><strong>Gold:</strong> " +
+        esc(q.gold) + "</p><pre>" + esc(q.context || "(empty)") + "</pre></details></td><td>" + esc(q.category) +
+        "</td><td><span class='badge " + cls + "'>" + s + "</span>" + (q.gold_suspect ? " <span class='badge warn'>flagged</span>" : "") +
+        (q.stale ? " <span class='badge warn'>stale</span>" : "") + "</td><td class='num'>" + q.tokens + "</td><td>" + esc(q.error || q.reason) + "</td></tr>";
+    }).join("");
+  }
+  [search, verdict, cat].forEach(function (el) { el.addEventListener("input", render); });
+  render();
+})();
+</script>
+</body>
+</html>

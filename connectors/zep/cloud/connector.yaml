@@ -1,0 +1,14 @@
+id: zep/cloud
+target: Zep Cloud (temporal knowledge graph, v3 API)
+author: MemJudge maintainers
+label: maintainer-written
+sdk: zep-cloud==3.30.0
+required_keys: [ZEP_API_KEY]
+allowed_domains: [api.getzep.com]
+models: vendor # Zep picks the models and does not say which (ADR 0014)
+settings:
+  reranker: rrf
+  max_message_chars: 4000
+  poll_interval_s: 2.0
+  ingest_timeout_s: 1800
+  base_url: null # null = https://api.getzep.com/api/v2; set for local/self-hosted

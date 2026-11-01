@@ -1,0 +1,1049 @@
+{
+  "$defs": {
+    "Affiliation": {
+      "additionalProperties": false,
+      "properties": {
+        "affiliated": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Is the submitter affiliated with the memory system this run tests?",
+          "title": "Affiliated"
+        },
+        "system": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "System"
+        }
+      },
+      "required": [
+        "affiliated"
+      ],
+      "title": "Affiliation",
+      "type": "object"
+    },
+    "Artifact": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "sha256": {
+          "title": "Sha256",
+          "type": "string"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        }
+      },
+      "required": [
+        "name",
+        "sha256"
+      ],
+      "title": "Artifact",
+      "type": "object"
+    },
+    "CategoryMetrics": {
+      "additionalProperties": false,
+      "properties": {
+        "questions": {
+          "title": "Questions",
+          "type": "integer"
+        },
+        "correct": {
+          "title": "Correct",
+          "type": "integer"
+        },
+        "accuracy": {
+          "title": "Accuracy",
+          "type": "number"
+        },
+        "accuracy_ci95": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Accuracy Ci95",
+          "type": "array"
+        },
+        "context_tokens_mean": {
+          "title": "Context Tokens Mean",
+          "type": "number"
+        },
+        "context_tokens_p95": {
+          "title": "Context Tokens P95",
+          "type": "number"
+        },
+        "efficiency": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Efficiency"
+        },
+        "retrieval_latency_p50_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Retrieval Latency P50 S"
+        },
+        "retrieval_latency_p95_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Retrieval Latency P95 S"
+        },
+        "abstention_accuracy": {
+          "$ref": "#/$defs/Rate"
+        },
+        "stale_fact_rate": {
+          "$ref": "#/$defs/Rate"
+        },
+        "evidence_recall": {
+          "$ref": "#/$defs/Rate"
+        },
+        "truncation_rate": {
+          "title": "Truncation Rate",
+          "type": "number"
+        },
+        "flagged": {
+          "title": "Flagged",
+          "type": "integer"
+        },
+        "errors": {
+          "title": "Errors",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "questions",
+        "correct",
+        "accuracy",
+        "accuracy_ci95",
+        "context_tokens_mean",
+        "context_tokens_p95",
+        "efficiency",
+        "retrieval_latency_p50_s",
+        "retrieval_latency_p95_s",
+        "abstention_accuracy",
+        "stale_fact_rate",
+        "evidence_recall",
+        "truncation_rate",
+        "flagged",
+        "errors"
+      ],
+      "title": "CategoryMetrics",
+      "type": "object"
+    },
+    "ConnectorInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "code_hash": {
+          "title": "Code Hash",
+          "type": "string"
+        },
+        "target": {
+          "title": "Target",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "sdk": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Sdk"
+        },
+        "settings": {
+          "additionalProperties": true,
+          "title": "Settings",
+          "type": "object"
+        },
+        "models": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "const": "vendor",
+              "type": "string"
+            }
+          ],
+          "description": "Settings that name the models the system ran, or 'vendor' when the vendor picks them and does not say which. Empty for systems without a model (ADR 0014).",
+          "title": "Models"
+        },
+        "endpoint": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Base URL the connector called, without credentials; None if in-process.",
+          "title": "Endpoint"
+        },
+        "custom_endpoint": {
+          "default": false,
+          "description": "True when the endpoint is not one of the connector's declared domains (localhost, staging, self-hosted). Such runs are never published.",
+          "title": "Custom Endpoint",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "code_hash",
+        "target",
+        "label",
+        "sdk",
+        "settings"
+      ],
+      "title": "ConnectorInfo",
+      "type": "object"
+    },
+    "Cost": {
+      "additionalProperties": false,
+      "description": "USD. ``None`` means not reported by the system (never estimated).",
+      "properties": {
+        "ingestion_usd": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Ingestion Usd"
+        },
+        "retrieval_usd": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Retrieval Usd"
+        },
+        "judge_usd": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Judge Usd"
+        },
+        "total_usd": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Total Usd"
+        },
+        "per_1k_questions_usd": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Per 1K Questions Usd"
+        },
+        "ingestion_credits": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Ingestion Credits"
+        },
+        "retrieval_credits": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Retrieval Credits"
+        },
+        "judge_cost_source": {
+          "title": "Judge Cost Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ingestion_usd",
+        "retrieval_usd",
+        "judge_usd",
+        "total_usd",
+        "per_1k_questions_usd",
+        "ingestion_credits",
+        "retrieval_credits",
+        "judge_cost_source"
+      ],
+      "title": "Cost",
+      "type": "object"
+    },
+    "DatasetInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "version": {
+          "title": "Version",
+          "type": "string"
+        },
+        "hash": {
+          "title": "Hash",
+          "type": "string"
+        },
+        "curated": {
+          "title": "Curated",
+          "type": "boolean"
+        },
+        "license": {
+          "title": "License",
+          "type": "string"
+        },
+        "upstream_sha256": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Upstream Sha256"
+        },
+        "errata_applied": {
+          "title": "Errata Applied",
+          "type": "integer"
+        },
+        "selection": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Selection"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "How part of the dataset was chosen; None for a full run."
+        },
+        "conversation_ids": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Conversations actually run; None for a full run.",
+          "title": "Conversation Ids"
+        },
+        "questions": {
+          "title": "Questions",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "name",
+        "version",
+        "hash",
+        "curated",
+        "license",
+        "upstream_sha256",
+        "errata_applied",
+        "questions"
+      ],
+      "title": "DatasetInfo",
+      "type": "object"
+    },
+    "Ingestion": {
+      "additionalProperties": false,
+      "properties": {
+        "conversations": {
+          "title": "Conversations",
+          "type": "integer"
+        },
+        "sessions": {
+          "title": "Sessions",
+          "type": "integer"
+        },
+        "turns": {
+          "title": "Turns",
+          "type": "integer"
+        },
+        "total_s": {
+          "title": "Total S",
+          "type": "number"
+        },
+        "per_turn_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Per Turn S"
+        },
+        "per_session_p50_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Per Session P50 S"
+        },
+        "per_session_p95_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Per Session P95 S"
+        },
+        "api_calls": {
+          "title": "Api Calls",
+          "type": "integer"
+        },
+        "input_tokens": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Input Tokens"
+        },
+        "output_tokens": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Output Tokens"
+        },
+        "mode": {
+          "default": "per-session",
+          "enum": [
+            "per-session",
+            "batch"
+          ],
+          "title": "Mode",
+          "type": "string"
+        }
+      },
+      "required": [
+        "conversations",
+        "sessions",
+        "turns",
+        "total_s",
+        "per_turn_s",
+        "per_session_p50_s",
+        "per_session_p95_s",
+        "api_calls",
+        "input_tokens",
+        "output_tokens"
+      ],
+      "title": "Ingestion",
+      "type": "object"
+    },
+    "JudgeInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "route": {
+          "title": "Route",
+          "type": "string"
+        },
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "upstream_provider": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Upstream Provider"
+        },
+        "effort": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Effort"
+        },
+        "max_output_tokens": {
+          "title": "Max Output Tokens",
+          "type": "integer"
+        },
+        "prompt_version": {
+          "title": "Prompt Version",
+          "type": "string"
+        },
+        "prompt_hash": {
+          "title": "Prompt Hash",
+          "type": "string"
+        },
+        "served_by": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Served By",
+          "type": "array"
+        },
+        "official": {
+          "title": "Official",
+          "type": "boolean"
+        },
+        "season": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Season"
+        }
+      },
+      "required": [
+        "route",
+        "model",
+        "upstream_provider",
+        "effort",
+        "max_output_tokens",
+        "prompt_version",
+        "prompt_hash",
+        "served_by",
+        "official",
+        "season"
+      ],
+      "title": "JudgeInfo",
+      "type": "object"
+    },
+    "Metrics": {
+      "additionalProperties": false,
+      "properties": {
+        "overall": {
+          "$ref": "#/$defs/CategoryMetrics"
+        },
+        "by_category": {
+          "additionalProperties": {
+            "$ref": "#/$defs/CategoryMetrics"
+          },
+          "title": "By Category",
+          "type": "object"
+        },
+        "ingestion": {
+          "$ref": "#/$defs/Ingestion"
+        },
+        "cost": {
+          "$ref": "#/$defs/Cost"
+        },
+        "error_rate": {
+          "$ref": "#/$defs/Rate"
+        },
+        "flagged_question_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Flagged Question Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "overall",
+        "by_category",
+        "ingestion",
+        "cost",
+        "error_rate",
+        "flagged_question_ids"
+      ],
+      "title": "Metrics",
+      "type": "object"
+    },
+    "Rate": {
+      "additionalProperties": false,
+      "description": "A proportion with its sample size; ``value`` is None when ``n`` is 0.",
+      "properties": {
+        "n": {
+          "title": "N",
+          "type": "integer"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value"
+        }
+      },
+      "required": [
+        "n",
+        "value"
+      ],
+      "title": "Rate",
+      "type": "object"
+    },
+    "RejudgedFrom": {
+      "additionalProperties": false,
+      "description": "Set when this result judged an earlier run's stored contexts again, for a later season.\n\nRetrieval, ingestion and the connector are that run's; the judge, prompt and tool are this\nresult's. The earlier result stays published under its own season.",
+      "properties": {
+        "run_id": {
+          "title": "Run Id",
+          "type": "string"
+        },
+        "season": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Season"
+        }
+      },
+      "required": [
+        "run_id",
+        "season"
+      ],
+      "title": "RejudgedFrom",
+      "type": "object"
+    },
+    "ReusedIngestionInfo": {
+      "additionalProperties": false,
+      "description": "Set when a run reused an earlier run's stored data and only re-ran retrieval.\n\nIngestion metrics then come from that run. Such runs are local-only: published runs\nalways ingest fresh.",
+      "properties": {
+        "run_id": {
+          "title": "Run Id",
+          "type": "string"
+        },
+        "connector_code_hash": {
+          "title": "Connector Code Hash",
+          "type": "string"
+        }
+      },
+      "required": [
+        "run_id",
+        "connector_code_hash"
+      ],
+      "title": "ReusedIngestionInfo",
+      "type": "object"
+    },
+    "RunConfigInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "budget_tokens": {
+          "title": "Budget Tokens",
+          "type": "integer"
+        },
+        "tokenizer": {
+          "title": "Tokenizer",
+          "type": "string"
+        },
+        "concurrency": {
+          "title": "Concurrency",
+          "type": "integer"
+        },
+        "judge_concurrency": {
+          "title": "Judge Concurrency",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "budget_tokens",
+        "tokenizer",
+        "concurrency",
+        "judge_concurrency"
+      ],
+      "title": "RunConfigInfo",
+      "type": "object"
+    },
+    "RunEvent": {
+      "additionalProperties": false,
+      "description": "A hosted run stopping or being resumed, as the runner recorded it (ADR 0016).",
+      "properties": {
+        "at": {
+          "format": "date-time",
+          "title": "At",
+          "type": "string"
+        },
+        "event": {
+          "enum": [
+            "stopped",
+            "resumed"
+          ],
+          "title": "Event",
+          "type": "string"
+        },
+        "cause": {
+          "anyOf": [
+            {
+              "enum": [
+                "submitter",
+                "retrieval",
+                "judge",
+                "crash",
+                "runner"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cause"
+        }
+      },
+      "required": [
+        "at",
+        "event"
+      ],
+      "title": "RunEvent",
+      "type": "object"
+    },
+    "Selection": {
+      "additionalProperties": false,
+      "description": "Which part of a dataset to run. Filters apply in this order:\n\n1. ``conversation_ids`` keeps only those conversations;\n2. ``categories`` keeps only questions in those categories, and drops conversations\n   left with no questions (so nothing is ingested for nothing);\n3. ``smallest`` keeps the N conversations with the fewest turns, or\n   ``sample`` keeps N conversations chosen at random with ``seed``.",
+      "properties": {
+        "conversation_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Conversation Ids",
+          "type": "array"
+        },
+        "categories": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Categories",
+          "type": "array"
+        },
+        "smallest": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Smallest"
+        },
+        "sample": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sample"
+        },
+        "seed": {
+          "default": 0,
+          "title": "Seed",
+          "type": "integer"
+        }
+      },
+      "title": "Selection",
+      "type": "object"
+    },
+    "ToolInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "title": "Version",
+          "type": "string"
+        },
+        "commit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Commit"
+        },
+        "image_digest": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Image Digest"
+        }
+      },
+      "required": [
+        "version",
+        "commit"
+      ],
+      "title": "ToolInfo",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1",
+      "default": "1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "run_id": {
+      "title": "Run Id",
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "local",
+        "hosted"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "started_at": {
+      "format": "date-time",
+      "title": "Started At",
+      "type": "string"
+    },
+    "finished_at": {
+      "format": "date-time",
+      "title": "Finished At",
+      "type": "string"
+    },
+    "tool": {
+      "$ref": "#/$defs/ToolInfo"
+    },
+    "dataset": {
+      "$ref": "#/$defs/DatasetInfo"
+    },
+    "connector": {
+      "$ref": "#/$defs/ConnectorInfo"
+    },
+    "judge": {
+      "$ref": "#/$defs/JudgeInfo"
+    },
+    "config": {
+      "$ref": "#/$defs/RunConfigInfo"
+    },
+    "metrics": {
+      "additionalProperties": {
+        "$ref": "#/$defs/Metrics"
+      },
+      "description": "One entry per result size, top10 and top30 (ADR 0018). Ingestion is shared, so both carry the same ingestion numbers.",
+      "propertyNames": {
+        "enum": [
+          "top10",
+          "top30"
+        ]
+      },
+      "title": "Metrics",
+      "type": "object"
+    },
+    "price_table_version": {
+      "title": "Price Table Version",
+      "type": "string"
+    },
+    "artifacts": {
+      "items": {
+        "$ref": "#/$defs/Artifact"
+      },
+      "title": "Artifacts",
+      "type": "array"
+    },
+    "affiliation": {
+      "$ref": "#/$defs/Affiliation"
+    },
+    "reused_ingestion": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ReusedIngestionInfo"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "rejudged_from": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RejudgedFrom"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "resumes": {
+      "default": 0,
+      "description": "Times the run was resumed after it stopped (memory system or judge failure, crash, or stopped by the submitter). Completed conversations were kept; unfinished ones were redone.",
+      "minimum": 0,
+      "title": "Resumes",
+      "type": "integer"
+    },
+    "history": {
+      "description": "Hosted runs: when the run stopped (and why) and was resumed, as the runner recorded it. Empty for local runs and runs that never stopped.",
+      "items": {
+        "$ref": "#/$defs/RunEvent"
+      },
+      "title": "History",
+      "type": "array"
+    },
+    "key_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Key Id"
+    }
+  },
+  "required": [
+    "run_id",
+    "mode",
+    "started_at",
+    "finished_at",
+    "tool",
+    "dataset",
+    "connector",
+    "judge",
+    "config",
+    "metrics",
+    "price_table_version",
+    "artifacts",
+    "affiliation"
+  ],
+  "title": "RunResult",
+  "type": "object"
+}

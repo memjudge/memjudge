@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Fork PRs run with a read-only token and no secrets. Never use pull_request_target here.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Lint, types, tests (py${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install
+        run: python -m pip install -e ".[dev,all]"
+      - name: Lint
+        run: ruff check . && ruff format --check .
+      - name: Type-check package
+        run: mypy
+      - name: Type-check connectors
+        run: for f in connectors/*/*/connector.py; do mypy --strict --ignore-missing-imports "$f"; done
+      - name: Validate connector specs and result schema
+        run: |
+          memjudge connectors
+          memjudge schema | diff - schemas/result.v1.json
+      - name: Test
+        run: pytest
+
+  seasons:
+    name: Past seasons unchanged
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Compare seasons.json with the base branch
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: python scripts/check_seasons.py "origin/$BASE_REF"
+
+  runner:
+    name: Runner lint, types, tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: python -m pip install -e ".[dev]" -e "./runner[dev]"
+      - name: Lint, types, tests
+        working-directory: runner
+        run: ruff check . && ruff format --check . && mypy && pytest
