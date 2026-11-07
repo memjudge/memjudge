@@ -173,7 +173,8 @@ class Connector(BaseConnector):
 
 
 async def _both(a: Coroutine[Any, Any, T], b: Coroutine[Any, Any, U]) -> tuple[T, U]:
-    return await asyncio.gather(a, b)
+    first, second = await asyncio.gather(a, b)
+    return first, second
 
 
 def _utc(when: datetime) -> datetime:
