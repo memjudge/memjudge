@@ -10,8 +10,8 @@
 - Each turn is added as its own episode, as in every connector, with the turn's date as
   ``reference_time`` so Graphiti can build valid-time ranges for facts. ``add_episode``
   returns once the episode is processed, so data is searchable when ``ingest`` returns.
-- Retrieval searches facts (edges, cross-encoder reranked) and entities (nodes, RRF) and
-  formats them like the zep/cloud connector, with fact validity dates.
+- Retrieval searches facts (edges, cross-encoder reranked) and entities (nodes, RRF) at the
+  same time and formats them like the zep/cloud connector, with fact validity dates.
 - graphiti-core is async; one private event loop in a background thread runs every call.
   Graphiti's OpenAI client does not report token usage, so only calls are counted.
 """
@@ -47,6 +47,7 @@ from memjudge.connectors.base import BaseConnector, Item, Retrieval, Usage
 from memjudge.schema import Session
 
 T = TypeVar("T")
+U = TypeVar("U")
 
 
 class Connector(BaseConnector):
@@ -96,8 +97,13 @@ class Connector(BaseConnector):
         # Copies: search_ must never change Graphiti's shared recipe objects.
         edge_config = EDGE_HYBRID_SEARCH_CROSS_ENCODER.model_copy(update={"limit": facts})
         node_config = NODE_HYBRID_SEARCH_RRF.model_copy(update={"limit": top_k - facts})
-        edges = self._run(self._graphiti.search_(query, edge_config, group_ids=[namespace]))
-        nodes = self._run(self._graphiti.search_(query, node_config, group_ids=[namespace]))
+        # Both searches at once, as an app would send them, so latency is not their sum.
+        edges, nodes = self._run(
+            _both(
+                self._graphiti.search_(query, edge_config, group_ids=[namespace]),
+                self._graphiti.search_(query, node_config, group_ids=[namespace]),
+            )
+        )
         items: list[Item] = []
         fact_lines = []
         for i, e in enumerate(edges.edges):
@@ -164,6 +170,10 @@ class Connector(BaseConnector):
 
     def _run(self, coro: Coroutine[Any, Any, T]) -> T:
         return asyncio.run_coroutine_threadsafe(coro, self._loop).result()
+
+
+async def _both(a: Coroutine[Any, Any, T], b: Coroutine[Any, Any, U]) -> tuple[T, U]:
+    return await asyncio.gather(a, b)
 
 
 def _utc(when: datetime) -> datetime:
