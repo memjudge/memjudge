@@ -4,6 +4,12 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/). Changes that alter scores are marked **[scoring]**.
 
+## [Unreleased]
+
+### Fixed
+- `zep/graphiti` runs its fact and entity searches at the same time, as an app would, so
+  retrieval latency is no longer the sum of the two. Accuracy is unchanged.
+
 ## [0.1.0] - 2026-11-02
 
 First release.
@@ -70,4 +76,5 @@ First release.
   vendor's consent. `.github/workflows/runner.yml` builds the image and deploys one job set
   per release.
 
+[Unreleased]: https://github.com/memjudge/memjudge/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/memjudge/memjudge/releases/tag/v0.1.0

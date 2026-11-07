@@ -3,6 +3,7 @@ offline; live smoke tests run only when the vendor key is set (see test_live_*).
 
 from __future__ import annotations
 
+import asyncio
 import json
 import os
 import socket
@@ -816,6 +817,7 @@ class FakeGraphiti:
         self.clients = clients
         self.episodes: list[dict[str, Any]] = []
         self.searches: list[Any] = []
+        self.in_flight = self.most_in_flight = 0
         falkor = graph_driver.client
 
         class Clone:
@@ -833,6 +835,10 @@ class FakeGraphiti:
 
     async def search_(self, query: str, config: Any, group_ids: list[str]) -> Any:
         self.searches.append(config)
+        self.in_flight += 1
+        self.most_in_flight = max(self.most_in_flight, self.in_flight)
+        await asyncio.sleep(0)
+        self.in_flight -= 1
         if config.edge_config is not None:
             edge = SimpleNamespace(
                 fact="Ana has a dog named Biscuit", valid_at=datetime(2024, 3, 1), invalid_at=None
@@ -868,6 +874,7 @@ def test_graphiti_contract(monkeypatch: pytest.MonkeyPatch) -> None:
     assert "- Ana has a dog named Biscuit (2024-03-01 – present)" in r.context
     assert "- Biscuit: Ana's dog" in r.context
     assert [s.limit for s in fake.searches] == [20, 10]  # 30 items in total
+    assert fake.most_in_flight == 2  # both searches at once
     c.retrieve("ns", "dog?", None, 1000, 10)
     assert [s.limit for s in fake.searches[2:]] == [7, 3]  # Top 10 (ADR 0018)
     assert recipes.EDGE_HYBRID_SEARCH_CROSS_ENCODER.limit == 10  # shared recipe untouched
